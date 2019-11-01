@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import withRouter from 'umi/withRouter';
 import { TransitionGroup, CSSTransition } from 'react-transition-group';
-import IUmiComponent from '@/interfaces/IUmiComponent';
+import { IUmiComponent } from '@/interfaces';
 import { usePrevious } from '@/util/hooks';
 
 interface IGlobalLayoutProps extends IUmiComponent {}
