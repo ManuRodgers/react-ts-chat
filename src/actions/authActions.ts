@@ -1,6 +1,6 @@
 import { actionCreatorFactory } from 'dva-model-creator';
 import { LoginDto } from '@/dto/login.dto';
-import { Kind } from '../enum/index';
+import { Kind } from '@/enum';
 import { RegisterDto } from '@/dto/register.dto';
 
 const authActionCreator = actionCreatorFactory('auth');
@@ -8,6 +8,7 @@ const authActionCreator = actionCreatorFactory('auth');
 // sync action creators
 export const setIsAuth = authActionCreator<{ isAuth: boolean }>('setIsAuth');
 export const setErrorMsg = authActionCreator<{ errorMsg: string }>('setErrorMsg');
+export const setSuccessMsg = authActionCreator<{ successMsg: string }>('setSuccessMsg');
 export const setEmail = authActionCreator<{ email: string }>('setEmail');
 export const setUserId = authActionCreator<{ userId: string }>('setUserId');
 export const setPassword = authActionCreator<{ password: string }>('setPassword');
@@ -18,6 +19,10 @@ export const setIsGettingCurrentUser = authActionCreator<{ isGettingCurrentUser:
   'setIsGettingCurrentUser',
 );
 export const setIsRegistering = authActionCreator<{ isRegistering: boolean }>('setIsRegistering');
+export const getCurrentUserInfoSync = authActionCreator<{ email: string; id: string; kind: Kind }>(
+  'getCurrentUserInfoSync',
+);
+
 // async action creators
 export const loginAsync = authActionCreator<LoginDto>('loginAsync');
 export const registerAsync = authActionCreator<RegisterDto>('registerAsync');

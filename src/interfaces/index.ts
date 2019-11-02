@@ -15,10 +15,9 @@ export interface IAuthModel {
   isAuth?: boolean;
   userId?: string;
   email?: string;
-  password?: string;
-  confirm?: string;
   kind?: Kind;
   errorMsg?: string;
+  successMsg?: string;
   isLogin?: boolean;
   isRegistering?: boolean;
   isGettingCurrentUser?: boolean;

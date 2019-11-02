@@ -5,6 +5,7 @@ import { IUmiComponent, IGlobalState } from '@/interfaces';
 import Logo from './components/Logo';
 import { Kind } from '@/enum';
 import { registerAsync, setErrorMsg } from '../../actions/authActions';
+import { router } from 'umi';
 const mapStateToProps = ({ auth }: IGlobalState) => ({
   auth,
 });
@@ -52,7 +53,9 @@ const Register: React.FunctionComponent<IRegisterProps> = ({ dispatch, auth }) =
     }
     dispatch(registerAsync({ email, password, kind }));
   }, [email, password, confirm, kind]);
-
+  const goLogin: React.MouseEventHandler<HTMLAnchorElement> = useCallback(() => {
+    router.push(`/auth/login`);
+  }, []);
   const generateErrorMsg = (errorMsg: string = ''): ReactNode | null => {
     return errorMsg === '' ? null : <NoticeBar mode={'closable'}>{errorMsg}</NoticeBar>;
   };
@@ -119,6 +122,10 @@ const Register: React.FunctionComponent<IRegisterProps> = ({ dispatch, auth }) =
           <WhiteSpace />
           <Button onClick={handleRegisterSubmitted} type={'primary'}>
             Register
+          </Button>
+          <WhiteSpace />
+          <Button onClick={goLogin} type={'primary'}>
+            Back To Login
           </Button>
         </List>
       </Flex.Item>

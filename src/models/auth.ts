@@ -6,9 +6,9 @@ import { IGlobalState } from '@/interfaces';
 import {
   setUserId,
   setEmail,
-  setPassword,
   setKind,
   setErrorMsg,
+  setSuccessMsg,
   setIsAuth,
   loginAsync,
   setIsLogin,
@@ -16,7 +16,9 @@ import {
   setIsRegistering,
   getCurrentUserInfoAsync,
   setIsGettingCurrentUser,
+  getCurrentUserInfoSync,
 } from '@/actions/authActions';
+import { getRedirectPath } from '@/util/redirectTo';
 import { Kind } from '../enum/index';
 import { LoginDto } from '@/dto/login.dto';
 import { RegisterDto } from '../dto/register.dto';
@@ -24,10 +26,9 @@ import { RegisterDto } from '../dto/register.dto';
 const initState: IGlobalState['auth'] = {
   isAuth: false,
   errorMsg: '',
+  successMsg: '',
   email: '',
   userId: '',
-  password: '',
-  confirm: '',
   kind: Kind.GENIUS,
   isLogin: false,
   isRegistering: false,
@@ -39,8 +40,8 @@ const authBuilder = new DvaModelBuilder(initState, 'auth')
     email,
   }))
   .case(setErrorMsg, (state, { errorMsg }) => ({ ...state, errorMsg }))
+  .case(setSuccessMsg, (state, { successMsg }) => ({ ...state, successMsg }))
   .case(setUserId, (state, { userId }) => ({ ...state, userId }))
-  .case(setPassword, (state, { password }) => ({ ...state, password }))
   .case(setKind, (state, { kind }) => ({ ...state, kind }))
   .case(setIsAuth, (state, { isAuth }) => ({ ...state, isAuth }))
   .case(setIsRegistering, (state, { isRegistering }) => ({ ...state, isRegistering }))
@@ -49,6 +50,10 @@ const authBuilder = new DvaModelBuilder(initState, 'auth')
     ...state,
     isGettingCurrentUser,
   }))
+  .case(getCurrentUserInfoSync, (state, { email, id, kind }) => {
+    // login ok
+    return { ...state, email, kind, userId: id, errorMsg: '', isAuth: true };
+  })
   .takeEvery(loginAsync, function*({ email, password }, { select, put }) {
     try {
       const isLogin = yield select((state: IGlobalState) => state.auth.isLogin);
@@ -60,16 +65,27 @@ const authBuilder = new DvaModelBuilder(initState, 'auth')
         email,
         password,
       } as LoginDto);
-      console.log('TCL: .takeEvery -> data', data);
-      console.log('TCL: .takeEvery -> status', status);
+
       if (status === 201) {
+        console.log(`login ok`);
+        console.log('TCL: .takeEvery -> data', data);
+        console.log('TCL: .takeEvery -> status', status);
         yield put(setIsLogin({ isLogin: false }));
-        yield getCurrentUserInfoAsync({ accessToken: data.accessToken });
+        yield put(setErrorMsg({ errorMsg: '' }));
+        yield put(getCurrentUserInfoAsync({ accessToken: data.accessToken }));
         yield localStorage.setItem('access_token', data.accessToken);
       }
     } catch (error) {
-      console.error(error);
+      console.log('TCL: .takeEvery -> error', error.response);
       yield put(setIsLogin({ isLogin: false }));
+      if (error.response.data.statusCode === 400) {
+        yield put(
+          setErrorMsg({ errorMsg: JSON.stringify(error.response.data.message[0].constraints) }),
+        );
+      }
+      if (error.response.data.statusCode === 401) {
+        yield put(setErrorMsg({ errorMsg: `Invalid Credentials,Please Register or Login again` }));
+      }
     }
   })
   .takeEvery(registerAsync, function*({ email, password, kind }, { select, put }) {
@@ -86,14 +102,10 @@ const authBuilder = new DvaModelBuilder(initState, 'auth')
       } as RegisterDto);
       if (status === 201 && data.code === 0) {
         // register ok
-        // console.log('TCL: .takeEvery -> data', data.data);
-        // const { email, kind, id } = data.data;
-        // yield put(setEmail({ email }));
-        // yield put(setUserId({ userId: id }));
-        // yield put(setKind({ kind }));
+        yield put(setIsRegistering({ isRegistering: false }));
         yield put(setIsAuth({ isAuth: false }));
         yield put(setErrorMsg({ errorMsg: '' }));
-        yield put(setIsRegistering({ isRegistering: false }));
+        yield put(setSuccessMsg({ successMsg: 'Register successfully please login' }));
         yield router.push('/auth/login');
       } else {
         // register not ok
@@ -123,23 +135,22 @@ const authBuilder = new DvaModelBuilder(initState, 'auth')
       if (isGettingCurrentUser) {
         return;
       }
-      //  TODO
       yield put(setIsGettingCurrentUser({ isGettingCurrentUser: true }));
       const { data, status } = yield axios.get('/api/user/info', {
         headers: { Authorization: `Bearer ${accessToken}` },
       });
-      console.log('TCL: .takeEvery -> data', data);
-
       if (status === 200) {
-        console.log('TCL: .takeEvery -> data', data);
         yield put(setIsGettingCurrentUser({ isGettingCurrentUser: false }));
+        const { email, id, kind } = data.data;
+        yield put(getCurrentUserInfoSync({ email, id, kind }));
+        yield router.push(getRedirectPath(kind));
       } else {
         console.log('TCL: .takeEvery -> status', status);
-        console.log('TCL: .takeEvery -> data', data);
+        console.log('get current user no ok', data);
         yield put(setIsGettingCurrentUser({ isGettingCurrentUser: false }));
       }
     } catch (error) {
-      console.error(error);
+      console.error(error.response);
       yield put(setIsGettingCurrentUser({ isGettingCurrentUser: false }));
     }
   });

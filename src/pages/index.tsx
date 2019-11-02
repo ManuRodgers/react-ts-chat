@@ -1,5 +1,6 @@
 /**
  * title: Index Page
+ * exact: false
  */
 import React from 'react';
 import Auth from '@/components/Auth';

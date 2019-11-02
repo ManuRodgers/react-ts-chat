@@ -6,7 +6,7 @@ interface IBossProps {}
 const Boss: React.FunctionComponent<IBossProps> = props => {
   return (
     <div>
-      <Auth />
+      <Auth /> Boss
     </div>
   );
 };
