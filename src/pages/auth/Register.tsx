@@ -53,11 +53,16 @@ const Register: React.FunctionComponent<IRegisterProps> = ({ dispatch, auth }) =
     }
     dispatch(registerAsync({ email, password, kind }));
   }, [email, password, confirm, kind]);
+
   const goLogin: React.MouseEventHandler<HTMLAnchorElement> = useCallback(() => {
     router.push(`/auth/login`);
   }, []);
   const generateErrorMsg = (errorMsg: string = ''): ReactNode | null => {
-    return errorMsg === '' ? null : <NoticeBar mode={'closable'}>{errorMsg}</NoticeBar>;
+    return errorMsg === '' ? null : (
+      <NoticeBar icon={null} mode="closable">
+        <span style={{ color: 'red', fontSize: '10px' }}>{errorMsg}</span>
+      </NoticeBar>
+    );
   };
   return (
     <Flex direction={'column'} className={`register`}>

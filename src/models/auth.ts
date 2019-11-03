@@ -1,4 +1,5 @@
 import { DvaModelBuilder } from 'dva-model-creator';
+import * as EmailValidator from 'email-validator';
 import axios, { AxiosResponse } from 'axios';
 import { router } from 'umi';
 
@@ -52,9 +53,15 @@ const authBuilder = new DvaModelBuilder(initState, 'auth')
   }))
   .case(getCurrentUserInfoSync, (state, { email, id, kind }) => {
     // login ok
-    return { ...state, email, kind, userId: id, errorMsg: '', isAuth: true };
+    return { ...state, email, kind, userId: id, errorMsg: '', isAuth: true, successMsg: '' };
   })
   .takeEvery(loginAsync, function*({ email, password }, { select, put }) {
+    if (email === '' || password === '') {
+      return yield put(setErrorMsg({ errorMsg: 'email or password cannot be empty' }));
+    }
+    if (!EmailValidator.validate(email)) {
+      return yield put(setErrorMsg({ errorMsg: 'Please enter correct form of email' }));
+    }
     try {
       const isLogin = yield select((state: IGlobalState) => state.auth.isLogin);
       if (isLogin) {
@@ -80,7 +87,9 @@ const authBuilder = new DvaModelBuilder(initState, 'auth')
       yield put(setIsLogin({ isLogin: false }));
       if (error.response.data.statusCode === 400) {
         yield put(
-          setErrorMsg({ errorMsg: JSON.stringify(error.response.data.message[0].constraints) }),
+          setErrorMsg({
+            errorMsg: JSON.stringify(error.response.data.message[0].constraints).split(':')[1],
+          }),
         );
       }
       if (error.response.data.statusCode === 401) {
@@ -89,6 +98,12 @@ const authBuilder = new DvaModelBuilder(initState, 'auth')
     }
   })
   .takeEvery(registerAsync, function*({ email, password, kind }, { select, put }) {
+    if (email === '' || password === '') {
+      return yield put(setErrorMsg({ errorMsg: 'email or password cannot be empty' }));
+    }
+    if (!EmailValidator.validate(email)) {
+      return yield put(setErrorMsg({ errorMsg: 'Please enter correct form of email' }));
+    }
     try {
       const isRegistering = yield select((state: IGlobalState) => state.auth.isRegistering);
       if (isRegistering) {
@@ -100,8 +115,11 @@ const authBuilder = new DvaModelBuilder(initState, 'auth')
         password,
         kind,
       } as RegisterDto);
+      console.log('TCL: .takeEvery -> status', status);
+      console.log('TCL: .takeEvery -> data', data);
       if (status === 201 && data.code === 0) {
         // register ok
+        console.log(`register ok`);
         yield put(setIsRegistering({ isRegistering: false }));
         yield put(setIsAuth({ isAuth: false }));
         yield put(setErrorMsg({ errorMsg: '' }));
@@ -123,8 +141,20 @@ const authBuilder = new DvaModelBuilder(initState, 'auth')
         yield put(setIsAuth({ isAuth: false }));
       }
     } catch (error) {
-      console.error(error);
+      console.log('TCL: .takeEvery -> error', error.response);
       yield put(setIsRegistering({ isRegistering: false }));
+      yield put(setIsAuth({ isAuth: false }));
+      if (error.response.data.statusCode === 400) {
+        yield put(
+          setErrorMsg({
+            errorMsg: JSON.stringify(error.response.data.message[0].constraints).split(':')[1],
+          }),
+        );
+      }
+      if (error.response.data.statusCode === 401) {
+        yield put(setErrorMsg({ errorMsg: `Invalid Credentials,Please Register or Login again` }));
+      }
+      yield router.push('/auth/register');
     }
   })
   .takeEvery(getCurrentUserInfoAsync, function*({ accessToken }, { select, put }) {

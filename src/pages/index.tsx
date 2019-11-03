@@ -1,18 +1,20 @@
 /**
  * title: Index Page
- * exact: false
  */
-import React from 'react';
+import React, { memo } from 'react';
 import Auth from '@/components/Auth';
+import { connect } from 'dva';
+import { IUmiComponent } from '@/interfaces';
 
-interface IAppProps {}
+interface IAppProps extends IUmiComponent {}
 
-const App: React.FunctionComponent<IAppProps> = props => {
+const App: React.FunctionComponent<IAppProps> = ({ dispatch }) => {
+  console.log('TCL: dispatch', dispatch);
   return (
     <div>
-      <Auth /> hello manu
+      <Auth dispatch={dispatch} /> hello manu
     </div>
   );
 };
 
-export default App;
+export default memo(connect()(App));

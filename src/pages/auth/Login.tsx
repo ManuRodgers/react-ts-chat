@@ -5,7 +5,7 @@ import { WhiteSpace, WingBlank, List, InputItem, Flex, Button, NoticeBar } from 
 import { IUmiComponent, IGlobalState } from '@/interfaces';
 import Logo from './components/Logo';
 import './auth.less';
-import { loginAsync } from '@/actions/authActions';
+import { loginAsync, setErrorMsg, setSuccessMsg } from '@/actions/authActions';
 
 const mapStateToProps = ({ auth }: IGlobalState) => ({
   auth,
@@ -32,6 +32,8 @@ const Login: React.FunctionComponent<ILoginProps> = ({ auth, dispatch }) => {
   );
 
   const goRegister: React.MouseEventHandler<HTMLAnchorElement> = useCallback(() => {
+    dispatch(setErrorMsg({ errorMsg: '' }));
+    dispatch(setSuccessMsg({ successMsg: '' }));
     router.push(`/auth/register`);
   }, []);
 
@@ -40,18 +42,28 @@ const Login: React.FunctionComponent<ILoginProps> = ({ auth, dispatch }) => {
   }, [email, password]);
   // TODO:
   const generateErrorMsg = (errorMsg: string = ''): ReactNode | null => {
-    return errorMsg === '' ? null : <NoticeBar mode={'closable'}>{errorMsg}</NoticeBar>;
+    return errorMsg === '' ? null : (
+      <NoticeBar icon={null} mode="closable">
+        <span style={{ color: 'red', fontSize: '10px' }}>{errorMsg}</span>
+      </NoticeBar>
+    );
   };
   const generateSuccessMsg = (successMsg: string = ''): ReactNode | null => {
-    return successMsg === '' ? null : <NoticeBar mode={'closable'}>{successMsg}</NoticeBar>;
+    return successMsg === '' ? null : (
+      <NoticeBar icon={null} mode="closable">
+        <span style={{ color: 'green', fontSize: '10px' }}>{successMsg}</span>
+      </NoticeBar>
+    );
   };
   return (
     <Flex className="login" direction={`column`}>
       <Flex.Item flex={1}>
         <Logo />
       </Flex.Item>
-      {generateErrorMsg(errorMsg)}
-      {generateSuccessMsg(successMsg)}
+      <Flex.Item flex={1}>
+        {generateErrorMsg(errorMsg)}
+        {generateSuccessMsg(successMsg)}
+      </Flex.Item>
       <Flex.Item style={{ width: '90%' }}>
         <List>
           <InputItem
@@ -81,7 +93,7 @@ const Login: React.FunctionComponent<ILoginProps> = ({ auth, dispatch }) => {
         </Button>
         <WhiteSpace />
         <Button onClick={goRegister} type={'primary'}>
-          Register
+          Go To Register
         </Button>
       </Flex.Item>
     </Flex>
