@@ -3,6 +3,9 @@ import { LoginDto } from '@/dto/login.dto';
 import { Kind } from '@/enum';
 import { RegisterDto } from '@/dto/register.dto';
 
+import { GeniusInfoDto } from '@/dto/geniusInfo.dto';
+import { BossInfoDto } from '@/dto/bossInfo.dto';
+
 const authActionCreator = actionCreatorFactory('auth');
 
 // sync action creators
@@ -18,7 +21,11 @@ export const setIsLogin = authActionCreator<{ isLogin: boolean }>('setIsLogin');
 export const setIsGettingCurrentUser = authActionCreator<{ isGettingCurrentUser: boolean }>(
   'setIsGettingCurrentUser',
 );
+
 export const setIsRegistering = authActionCreator<{ isRegistering: boolean }>('setIsRegistering');
+export const setIsUpdatingBossInfo = authActionCreator<{ isUpdatingBossInfo: boolean }>(
+  'setIsUpdatingBossInfo',
+);
 export const getCurrentUserInfoSync = authActionCreator<{ email: string; id: string; kind: Kind }>(
   'getCurrentUserInfoSync',
 );
@@ -26,6 +33,8 @@ export const getCurrentUserInfoSync = authActionCreator<{ email: string; id: str
 // async action creators
 export const loginAsync = authActionCreator<LoginDto>('loginAsync');
 export const registerAsync = authActionCreator<RegisterDto>('registerAsync');
+export const bossInfoAsync = authActionCreator<BossInfoDto>('bossInfoAsync');
+export const geniusInfoAsync = authActionCreator<GeniusInfoDto>('geniusInfoAsync');
 export const getCurrentUserInfoAsync = authActionCreator<{ accessToken: string }>(
   'getCurrentUserInfoAsync',
 );

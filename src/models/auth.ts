@@ -18,11 +18,14 @@ import {
   getCurrentUserInfoAsync,
   setIsGettingCurrentUser,
   getCurrentUserInfoSync,
+  bossInfoAsync,
+  setIsUpdatingBossInfo,
 } from '@/actions/authActions';
 import { getRedirectPath } from '@/util/redirectTo';
 import { Kind } from '../enum/index';
 import { LoginDto } from '@/dto/login.dto';
 import { RegisterDto } from '../dto/register.dto';
+import { BossInfoDto } from '@/dto/bossInfo.dto';
 
 const initState: IGlobalState['auth'] = {
   isAuth: false,
@@ -34,6 +37,7 @@ const initState: IGlobalState['auth'] = {
   isLogin: false,
   isRegistering: false,
   isGettingCurrentUser: false,
+  isUpdatingBossInfo: false,
 };
 const authBuilder = new DvaModelBuilder(initState, 'auth')
   .case(setEmail, (state, { email }) => ({
@@ -46,6 +50,10 @@ const authBuilder = new DvaModelBuilder(initState, 'auth')
   .case(setKind, (state, { kind }) => ({ ...state, kind }))
   .case(setIsAuth, (state, { isAuth }) => ({ ...state, isAuth }))
   .case(setIsRegistering, (state, { isRegistering }) => ({ ...state, isRegistering }))
+  .case(setIsUpdatingBossInfo, (state, { isUpdatingBossInfo }) => ({
+    ...state,
+    isUpdatingBossInfo,
+  }))
   .case(setIsLogin, (state, { isLogin }) => ({ ...state, isLogin }))
   .case(setIsGettingCurrentUser, (state, { isGettingCurrentUser }) => ({
     ...state,
@@ -182,6 +190,64 @@ const authBuilder = new DvaModelBuilder(initState, 'auth')
     } catch (error) {
       console.error(error.response);
       yield put(setIsGettingCurrentUser({ isGettingCurrentUser: false }));
+    }
+  })
+  .takeEvery(bossInfoAsync, function*(
+    { avatar, company, description, money, title },
+    { select, put },
+  ) {
+    try {
+      if (avatar === '') {
+        return yield put(setErrorMsg({ errorMsg: 'Please select your avatar' }));
+      }
+      if (title === '') {
+        return yield put(setErrorMsg({ errorMsg: 'Please enter your title' }));
+      }
+      if (company === '') {
+        return yield put(setErrorMsg({ errorMsg: 'Please enter your company' }));
+      }
+      if (money === '') {
+        return yield put(setErrorMsg({ errorMsg: 'Please enter the money you want to pay' }));
+      }
+      if (description === '') {
+        return yield put(setErrorMsg({ errorMsg: 'Please enter job description' }));
+      }
+      const accessToken = yield localStorage.getItem('access_token');
+      console.log('TCL: accessToken', accessToken);
+      console.log('TCL: avatar', avatar);
+      console.log('TCL: company', company);
+      console.log('TCL: description', description);
+      console.log('TCL: money', money);
+      console.log('TCL: title', title);
+      const isUpdatingBossInfo = yield select(
+        (state: IGlobalState) => state.auth.isUpdatingBossInfo,
+      );
+      if (isUpdatingBossInfo) {
+        return;
+      }
+      yield put(setIsUpdatingBossInfo({ isUpdatingBossInfo: true }));
+      const { data, status } = yield axios.put(
+        '/api/user/updateBossInfo',
+        { avatar, title, company, money, description } as BossInfoDto,
+        {
+          headers: { Authorization: `Bearer ${accessToken}` },
+        },
+      );
+      console.log('TCL: data', data);
+      console.log('TCL: status', status);
+      if (status === 200) {
+        yield put(setIsUpdatingBossInfo({ isUpdatingBossInfo: false }));
+        // const { email, id, kind } = data.data;
+        // yield put(getCurrentUserInfoSync({ email, id, kind }));
+        // yield router.push(getRedirectPath(kind));
+      } else {
+        console.log('TCL: .takeEvery -> status', status);
+        console.log('update current user no ok', data);
+        yield put(setIsUpdatingBossInfo({ isUpdatingBossInfo: false }));
+      }
+    } catch (error) {
+      console.error(error.response);
+      yield put(setIsUpdatingBossInfo({ isUpdatingBossInfo: false }));
     }
   });
 export default authBuilder.build();

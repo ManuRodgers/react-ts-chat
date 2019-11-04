@@ -21,6 +21,7 @@ export interface IAuthModel {
   isLogin?: boolean;
   isRegistering?: boolean;
   isGettingCurrentUser?: boolean;
+  isUpdatingBossInfo?: boolean;
 }
 
 export interface IResult<T> {

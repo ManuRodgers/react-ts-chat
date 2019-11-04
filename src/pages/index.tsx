@@ -9,7 +9,6 @@ import { IUmiComponent } from '@/interfaces';
 interface IAppProps extends IUmiComponent {}
 
 const App: React.FunctionComponent<IAppProps> = ({ dispatch }) => {
-  console.log('TCL: dispatch', dispatch);
   return (
     <div>
       <Auth dispatch={dispatch} /> hello manu
