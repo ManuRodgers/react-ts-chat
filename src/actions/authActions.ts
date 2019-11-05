@@ -23,17 +23,17 @@ export const setIsGettingCurrentUser = authActionCreator<{ isGettingCurrentUser:
 );
 
 export const setIsRegistering = authActionCreator<{ isRegistering: boolean }>('setIsRegistering');
-export const setIsUpdatingBossInfo = authActionCreator<{ isUpdatingBossInfo: boolean }>(
-  'setIsUpdatingBossInfo',
-);
+
 export const getCurrentUserInfoSync = authActionCreator<{ email: string; id: string; kind: Kind }>(
   'getCurrentUserInfoSync',
 );
 
+
+// genius info
+export const geniusInfoSync = authActionCreator<GeniusInfoDto>('geniusInfoSync');
 // async action creators
 export const loginAsync = authActionCreator<LoginDto>('loginAsync');
 export const registerAsync = authActionCreator<RegisterDto>('registerAsync');
-export const bossInfoAsync = authActionCreator<BossInfoDto>('bossInfoAsync');
 export const geniusInfoAsync = authActionCreator<GeniusInfoDto>('geniusInfoAsync');
 export const getCurrentUserInfoAsync = authActionCreator<{ accessToken: string }>(
   'getCurrentUserInfoAsync',

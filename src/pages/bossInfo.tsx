@@ -5,7 +5,7 @@ import { NavBar, List, InputItem, WhiteSpace, TextareaItem, Button, NoticeBar } 
 import Auth from '@/components/Auth';
 import { IUmiComponent, IGlobalState } from '@/interfaces';
 import AvatarSelector from '@/components/AvatarSelector';
-import { bossInfoAsync } from '@/actions/authActions';
+import { bossInfoAsync } from '@/actions/bossActions';
 
 const mapStateToProps = ({ auth }: IGlobalState) => ({
   auth,

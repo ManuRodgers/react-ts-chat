@@ -9,6 +9,7 @@ export interface IUmiComponent extends RouterTypes<{}, { id: string }> {
 
 export interface IGlobalState {
   auth: IAuthModel;
+  boss: IBossModel;
 }
 
 export interface IAuthModel {
@@ -21,6 +22,14 @@ export interface IAuthModel {
   isLogin?: boolean;
   isRegistering?: boolean;
   isGettingCurrentUser?: boolean;
+}
+
+export interface IBossModel {
+  avatar?: string;
+  title?: string;
+  company?: string;
+  money?: string;
+  description?: string;
   isUpdatingBossInfo?: boolean;
 }
 

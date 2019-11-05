@@ -3,17 +3,16 @@ import { connect } from 'dva';
 import Auth from '@/components/Auth';
 import { IUmiComponent, IGlobalState } from '@/interfaces';
 
-const mapStateToProps = ({ auth }: IGlobalState) => ({
-  auth,
+const mapStateToProps = ({ boss }: IGlobalState) => ({
+  boss,
 });
 type BossStateProps = ReturnType<typeof mapStateToProps>;
 interface IBossProps extends IUmiComponent, BossStateProps {}
 
-const Boss: React.FunctionComponent<IBossProps> = ({ dispatch }) => {
-  console.log('TCL: dispatch', dispatch);
+const Boss: React.FunctionComponent<IBossProps> = ({ boss, dispatch }) => {
   return (
     <div>
-      <Auth dispatch={dispatch} /> Boss
+      <Auth dispatch={dispatch} /> Boss Manu
     </div>
   );
 };
