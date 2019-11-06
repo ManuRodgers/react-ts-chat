@@ -7,19 +7,16 @@ import { IUmiComponent } from '@/interfaces';
 interface IAuthProps extends IUmiComponent {}
 
 export default memo(
-  withRouter<IAuthProps, React.ComponentType<IAuthProps>>(({ dispatch, route }) => {
+  withRouter<IAuthProps, React.ComponentType<IAuthProps>>(({ dispatch, location }) => {
     useEffect(() => {
       const publicList = ['/auth/login', '/auth/register'];
       if (publicList.indexOf(location.pathname) > -1) {
         return;
       }
       const accessToken = localStorage.getItem('access_token');
-      console.log('TCL: accessToken', accessToken);
       if (accessToken) {
-        console.log(`with accessToken`);
         dispatch(getCurrentUserInfoAsync({ accessToken }));
       } else {
-        console.log(`without accessToken`);
         router.push(`/auth/login`);
       }
     }, []);

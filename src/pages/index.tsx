@@ -11,7 +11,7 @@ interface IAppProps extends IUmiComponent {}
 const App: React.FunctionComponent<IAppProps> = ({ dispatch }) => {
   return (
     <div>
-      <Auth dispatch={dispatch} /> hello manu
+      <Auth dispatch={dispatch} />
     </div>
   );
 };

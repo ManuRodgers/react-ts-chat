@@ -22,9 +22,11 @@ import {
 import { getRedirectPath } from '@/util/redirectTo';
 import { Kind } from '../enum/index';
 import { LoginDto } from '@/dto/login.dto';
-import { BossInfoDto } from '@/dto/bossInfo.dto';
 import { RegisterDto } from '@/dto/register.dto';
+import { BossInfoDto } from '@/dto/bossInfo.dto';
 import { bossInfoSync } from '@/actions/bossActions';
+import { GeniusInfoDto } from '@/dto/geniusInfo.dto';
+import { geniusInfoSync } from '@/actions/geniusActions';
 
 const initState: IGlobalState['auth'] = {
   isAuth: false,
@@ -178,8 +180,23 @@ const authBuilder = new DvaModelBuilder(initState, 'auth')
         yield put(getCurrentUserInfoSync({ email, id, kind }));
         // boss
         if (userAvatar && kind == Kind.BOSS) {
+          console.log(`BOSS`);
           const { avatar, title, company, money, description } = data.data as BossInfoDto;
           yield put(bossInfoSync({ avatar, title, company, money, description }));
+          const whiteList = ['/dashboard/message', `/dashboard/me`];
+          if (whiteList.includes(location.pathname)) {
+            return;
+          }
+          return yield router.push(getRedirectPath(kind, userAvatar));
+        }
+        if (userAvatar && kind == Kind.GENIUS) {
+          console.log(`GENIUS `);
+          const { avatar, job, salary, profile } = data.data as GeniusInfoDto;
+          yield put(geniusInfoSync({ avatar, job, salary, profile }));
+          const whiteList = ['/dashboard/message', `/dashboard/me`];
+          if (whiteList.includes(location.pathname)) {
+            return;
+          }
           return yield router.push(getRedirectPath(kind, userAvatar));
         }
 

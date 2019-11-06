@@ -10,6 +10,7 @@ export interface IUmiComponent extends RouterTypes<{}, { id: string }> {
 export interface IGlobalState {
   auth: IAuthModel;
   boss: IBossModel;
+  genius: IGeniusModel;
 }
 
 export interface IAuthModel {
@@ -25,12 +26,23 @@ export interface IAuthModel {
 }
 
 export interface IBossModel {
+  geniusList?: [];
+  isGettingGeniusList: boolean;
   avatar?: string;
   title?: string;
   company?: string;
   money?: string;
   description?: string;
   isUpdatingBossInfo?: boolean;
+}
+export interface IGeniusModel {
+  bossList?: [];
+  isGettingBossList?: boolean;
+  avatar?: string;
+  job?: string;
+  salary?: string;
+  profile?: string;
+  isUpdatingGeniusInfo?: boolean;
 }
 
 export interface IResult<T> {
@@ -40,4 +52,22 @@ export interface IResult<T> {
   data?: T;
   error?: T;
   token?: string;
+}
+
+export interface IGenius {
+  avatar: string;
+  email: string;
+  id: string;
+  job: string;
+  salary: string;
+  profile: string;
+}
+export interface IBoss {
+  avatar: string;
+  email: string;
+  id: string;
+  title: string;
+  company: string;
+  money: string;
+  description: string;
 }
