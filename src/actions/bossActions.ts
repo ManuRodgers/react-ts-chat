@@ -16,6 +16,7 @@ export const setIsUpdatingBossInfo = bossActionCreator<{ isUpdatingBossInfo: boo
 );
 
 export const bossInfoSync = bossActionCreator<BossInfoDto>('bossInfoSync');
+export const logoutBossInfoSync = bossActionCreator<{}>('logoutBossInfoSync');
 export const bossInfoAsync = bossActionCreator<BossInfoDto>('bossInfoAsync');
 
 export const setIsGettingGeniusList = bossActionCreator<{ isGettingGeniusList: boolean }>(

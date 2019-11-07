@@ -27,7 +27,7 @@ export const setIsRegistering = authActionCreator<{ isRegistering: boolean }>('s
 export const getCurrentUserInfoSync = authActionCreator<{ email: string; id: string; kind: Kind }>(
   'getCurrentUserInfoSync',
 );
-
+export const logoutCurrentUserInfoSync = authActionCreator<{}>('logoutCurrentUserInfoSync');
 
 // genius info
 export const geniusInfoSync = authActionCreator<GeniusInfoDto>('geniusInfoSync');
@@ -35,6 +35,6 @@ export const geniusInfoSync = authActionCreator<GeniusInfoDto>('geniusInfoSync')
 export const loginAsync = authActionCreator<LoginDto>('loginAsync');
 export const registerAsync = authActionCreator<RegisterDto>('registerAsync');
 export const geniusInfoAsync = authActionCreator<GeniusInfoDto>('geniusInfoAsync');
-export const getCurrentUserInfoAsync = authActionCreator<{ accessToken: string }>(
-  'getCurrentUserInfoAsync',
-);
+export const getCurrentUserInfoAsync = authActionCreator<{
+  accessToken: string;
+}>('getCurrentUserInfoAsync');

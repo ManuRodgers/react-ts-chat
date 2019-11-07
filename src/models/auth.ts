@@ -18,6 +18,7 @@ import {
   getCurrentUserInfoAsync,
   setIsGettingCurrentUser,
   getCurrentUserInfoSync,
+  logoutCurrentUserInfoSync,
 } from '@/actions/authActions';
 import { getRedirectPath } from '@/util/redirectTo';
 import { Kind } from '../enum/index';
@@ -50,6 +51,7 @@ const authBuilder = new DvaModelBuilder(initState, 'auth')
   .case(setKind, (state, { kind }) => ({ ...state, kind }))
   .case(setIsAuth, (state, { isAuth }) => ({ ...state, isAuth }))
   .case(setIsRegistering, (state, { isRegistering }) => ({ ...state, isRegistering }))
+  .case(logoutCurrentUserInfoSync, (state, {}) => ({ ...initState }))
   .case(setIsLogin, (state, { isLogin }) => ({ ...state, isLogin }))
   .case(setIsGettingCurrentUser, (state, { isGettingCurrentUser }) => ({
     ...state,
@@ -187,6 +189,10 @@ const authBuilder = new DvaModelBuilder(initState, 'auth')
           if (whiteList.includes(location.pathname)) {
             return;
           }
+          console.log(
+            'TCL: .takeEvery -> getRedirectPath(kind, userAvatar)',
+            getRedirectPath(kind, userAvatar),
+          );
           return yield router.push(getRedirectPath(kind, userAvatar));
         }
         if (userAvatar && kind == Kind.GENIUS) {
@@ -199,7 +205,6 @@ const authBuilder = new DvaModelBuilder(initState, 'auth')
           }
           return yield router.push(getRedirectPath(kind, userAvatar));
         }
-
         return yield router.push(getRedirectPath(kind));
       } else {
         console.log('TCL: .takeEvery -> status', status);

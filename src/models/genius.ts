@@ -14,6 +14,7 @@ import {
   setIsGettingBossList,
   getBossListSync,
   getBossListAsync,
+  logoutGeniusInfoSync,
 } from '@/actions/geniusActions';
 import { setErrorMsg } from '@/actions/authActions';
 import { getRedirectPath } from '@/util/redirectTo';
@@ -41,6 +42,9 @@ const geniusBuilder = new DvaModelBuilder(initState, 'genius')
   .case(setIsGettingBossList, (state, { isGettingBossList }) => ({ ...state, isGettingBossList }))
   .case(geniusInfoSync, (state, { avatar, job, salary, profile }) => {
     return { ...state, avatar, job, salary, profile };
+  })
+  .case(logoutGeniusInfoSync, (state, {}) => {
+    return { ...initState };
   })
   .case(getBossListSync, (state, { bossList }) => ({ ...state, bossList }))
   .takeEvery(geniusInfoAsync, function*({ avatar, job, salary, profile }, { select, put }) {

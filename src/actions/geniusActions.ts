@@ -13,6 +13,7 @@ export const setIsUpdatingGeniusInfo = geniusActionCreator<{ isUpdatingGeniusInf
   'setIsUpdatingGeniusInfo',
 );
 export const geniusInfoSync = geniusActionCreator<GeniusInfoDto>('geniusInfoSync');
+export const logoutGeniusInfoSync = geniusActionCreator<{}>('logoutGeniusInfoSync');
 export const geniusInfoAsync = geniusActionCreator<GeniusInfoDto>('geniusInfoAsync');
 
 export const setIsGettingBossList = geniusActionCreator<{ isGettingBossList: boolean }>(
