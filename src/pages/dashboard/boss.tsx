@@ -1,5 +1,6 @@
 import React, { memo, useEffect, Fragment } from 'react';
 import { connect } from 'dva';
+import { router } from 'umi';
 import Auth from '@/components/Auth';
 import { getGeniusListAsync } from '@/actions/bossActions';
 import { IUmiComponent, IGlobalState, IGenius } from '@/interfaces';
@@ -24,7 +25,11 @@ const Boss: React.FunctionComponent<IBossProps> = ({ boss, dispatch }) => {
       return geniusList.map(genius => {
         return (
           <Fragment key={genius.id}>
-            <Card>
+            <Card
+              onClick={() => {
+                router.push(`/chat/${genius.id}`);
+              }}
+            >
               <Card.Header
                 title={genius.email.split('@')[0]}
                 thumb={require(`@/images/${genius.avatar}.png`)}

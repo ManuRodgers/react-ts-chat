@@ -1,4 +1,5 @@
 import React, { memo, useEffect, Fragment } from 'react';
+import { router } from 'umi';
 import { connect } from 'dva';
 import { WingBlank, Card, WhiteSpace } from 'antd-mobile';
 
@@ -24,7 +25,11 @@ const Genius: React.FunctionComponent<IGeniusProps> = ({ dispatch, genius }) => 
       return bossList.map(boss => {
         return (
           <Fragment key={boss.id}>
-            <Card>
+            <Card
+              onClick={() => {
+                router.push(`/chat/${boss.id}`);
+              }}
+            >
               <Card.Header
                 title={boss.email.split('@')[0]}
                 thumb={require(`@/images/${boss.avatar}.png`)}

@@ -87,7 +87,6 @@ const Dashboard: React.FunctionComponent<IDashboardProps> = ({
       <NavBar mode="dark">{getTitle(navList)}</NavBar>
       <div className={`dashboard-content`}>{children}</div>
       <TabBar
-        className={`stick-footer`}
         tabBarPosition={'bottom'}
         unselectedTintColor="#949494"
         tintColor="#33A3F4"
