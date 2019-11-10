@@ -118,6 +118,8 @@ const bossBuilder = new DvaModelBuilder(initState, 'boss')
       const { data, status } = yield axios.get('/api/user/geniusList', {
         headers: { Authorization: `Bearer ${accessToken}` },
       });
+      console.log('TCL: .takeEvery -> data', data);
+      console.log('TCL: .takeEvery -> status', status);
       if (status === 200 && data.code === CodeNumber.SUCCESS) {
         yield put(setIsGettingGeniusList({ isGettingGeniusList: false }));
         yield put(getGeniusListSync({ geniusList: data.data }));

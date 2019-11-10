@@ -3,7 +3,7 @@ import Auth from '@/components/Auth';
 import { router } from 'umi';
 import { connect } from 'dva';
 import { IUmiComponent, IGlobalState } from '@/interfaces';
-import { NavBar, TabBar } from 'antd-mobile';
+import { NavBar, TabBar, WhiteSpace } from 'antd-mobile';
 import { Kind } from '@/enum';
 import './dashboard.less';
 const mapStateToProps = ({ auth }: IGlobalState) => ({
@@ -85,6 +85,7 @@ const Dashboard: React.FunctionComponent<IDashboardProps> = ({
     <Fragment>
       <Auth dispatch={dispatch} />
       <NavBar mode="dark">{getTitle(navList)}</NavBar>
+      <WhiteSpace />
       <div className={`dashboard-content`}>{children}</div>
       <TabBar
         tabBarPosition={'bottom'}

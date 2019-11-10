@@ -186,7 +186,7 @@ const authBuilder = new DvaModelBuilder(initState, 'auth')
           const { avatar, title, company, money, description } = data.data as BossInfoDto;
           yield put(bossInfoSync({ avatar, title, company, money, description }));
           const whiteList = ['/dashboard/message', `/dashboard/me`];
-          if (whiteList.includes(location.pathname)) {
+          if (whiteList.includes(location.pathname) || location.pathname.startsWith('/chat')) {
             return;
           }
           console.log(
@@ -200,7 +200,7 @@ const authBuilder = new DvaModelBuilder(initState, 'auth')
           const { avatar, job, salary, profile } = data.data as GeniusInfoDto;
           yield put(geniusInfoSync({ avatar, job, salary, profile }));
           const whiteList = ['/dashboard/message', `/dashboard/me`];
-          if (whiteList.includes(location.pathname)) {
+          if (whiteList.includes(location.pathname) || location.pathname.startsWith('/chat')) {
             return;
           }
           return yield router.push(getRedirectPath(kind, userAvatar));

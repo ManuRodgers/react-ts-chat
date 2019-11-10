@@ -30,6 +30,11 @@ axios.interceptors.response.use(
       Toast.hide();
       router.push(`/auth/login`);
     }
+    if (error.response.status === 404) {
+      console.log('TCL: error', error.response);
+      Toast.hide();
+      router.push(`/auth/login`);
+    }
     if (error.response.status === 500) {
       console.log('TCL: error', error.response);
       Toast.fail(`Internal server error`);

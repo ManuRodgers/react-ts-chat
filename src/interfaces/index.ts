@@ -11,6 +11,7 @@ export interface IGlobalState {
   auth: IAuthModel;
   boss: IBossModel;
   genius: IGeniusModel;
+  chat: IChatModel;
 }
 
 export interface IAuthModel {
@@ -43,6 +44,11 @@ export interface IGeniusModel {
   salary?: string;
   profile?: string;
   isUpdatingGeniusInfo?: boolean;
+}
+export interface IChatModel {
+  chatList?: [];
+  targetUser?: IBoss | IGenius;
+  isGettingTargetUser?: boolean;
 }
 
 export interface IResult<T> {
