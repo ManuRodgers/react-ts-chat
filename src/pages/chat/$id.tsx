@@ -1,15 +1,22 @@
 import React, { memo, useEffect, useCallback, useState } from 'react';
-
+import dayjs from 'dayjs';
 import { connect } from 'dva';
 import { router } from 'umi';
 import { NavBar, Icon, Button, List, InputItem } from 'antd-mobile';
 import { MessageBox, ChatItem, ChatList } from 'react-chat-elements';
 
-import { getTargetUserByIdAsync, sendMsgAsync } from '@/actions/chatActions';
+import {
+  getTargetUserByIdAsync,
+  sendMsgAsync,
+  receiveMsgAsync,
+  sendMsgSync,
+  getCombinedIdChatListAsync,
+} from '@/actions/chatActions';
 import { IUmiComponent, IGlobalState } from '@/interfaces';
 import { IGenius } from '../../interfaces/index';
 import './chat.less';
 import Auth from '@/components/Auth';
+import { Position } from '@/enum';
 
 const mapStateToProps = ({ chat, auth }: IGlobalState) => ({
   chat,
@@ -21,11 +28,10 @@ type ChatStateProps = ReturnType<typeof mapStateToProps>;
 interface IChatProps extends IUmiComponent, ChatStateProps {}
 
 const Chat: React.FunctionComponent<IChatProps> = ({ computedMatch, dispatch, chat, auth }) => {
-  const { targetUser } = chat;
+  const { targetUser, chatList } = chat;
   const { userId } = auth;
   // text
   const [text, setText] = useState<string>('');
-  console.log('TCL: text', text);
   const handleTextChange = useCallback(
     (value: string) => {
       setText(value);
@@ -33,18 +39,8 @@ const Chat: React.FunctionComponent<IChatProps> = ({ computedMatch, dispatch, ch
     [text],
   );
 
-  // ws
-  // useEffect(() => {
-  //   const socket = io(`ws://localhost:9093`);
-  //   socket.emit(`sendMsg`, 20);
-  //   socket.on(`sendMsg`, (data: number) => {
-  //     console.log('TCL: data', data);
-  //   });
-  // }, []);
-  // getTargetUserByIdAsync
   useEffect(() => {
     if (computedMatch) {
-      console.log('TCL: computedMatch', computedMatch.params.id);
       dispatch(getTargetUserByIdAsync({ id: computedMatch.params.id }));
     }
   }, []);
@@ -60,14 +56,92 @@ const Chat: React.FunctionComponent<IChatProps> = ({ computedMatch, dispatch, ch
   //
   const handleSendClicked: React.MouseEventHandler<HTMLDivElement> = useCallback(() => {
     const to = targetUser && targetUser.id;
-    console.log('TCL: handleSendClicked -> to', to);
     const from = userId;
-    console.log('TCL: handleSendClicked -> from', from);
-    console.log('TCL: handleSendClicked -> text', text);
     if (from && to && text) {
-      dispatch(sendMsgAsync({ from, to, text }));
+      const combinedId = [from, to].sort().join('_');
+      // timestamp in seconds
+      const createdAt = Math.floor(Date.now() / 1000);
+      dispatch(
+        sendMsgAsync({
+          from,
+          to,
+          text,
+          combinedId,
+          createdAt,
+          position: Position.RIGHT,
+          isRead: false,
+        }),
+      );
+      dispatch(
+        sendMsgSync({
+          from,
+          to,
+          text,
+          combinedId,
+          createdAt,
+          position: Position.RIGHT,
+          isRead: false,
+        }),
+      );
+      setText('');
     }
   }, [text, targetUser]);
+
+  // getCombinedIdChatListAsync
+  useEffect(() => {
+    console.log(`chatListByCombinedId`);
+    const to = targetUser && targetUser.id;
+    const from = userId;
+    if (from && to) {
+      const combinedId = [from, to].sort().join('_');
+      if (combinedId) {
+        dispatch(getCombinedIdChatListAsync({ combinedId }));
+      }
+    }
+  });
+
+  // receiveMsgAsync
+  useEffect(() => {
+    dispatch(receiveMsgAsync({}));
+  }, [chatList]);
+
+  const handleEnterKeyDown: React.KeyboardEventHandler = useCallback(
+    e => {
+      if (e.keyCode === 13) {
+        const to = targetUser && targetUser.id;
+        const from = userId;
+        if (from && to && text) {
+          const combinedId = [from, to].sort().join('_');
+          // timestamp in seconds
+          const createdAt = Math.floor(Date.now() / 1000);
+          dispatch(
+            sendMsgAsync({
+              from,
+              to,
+              text,
+              combinedId,
+              createdAt,
+              position: Position.RIGHT,
+              isRead: false,
+            }),
+          );
+          dispatch(
+            sendMsgSync({
+              from,
+              to,
+              text,
+              combinedId,
+              createdAt,
+              position: Position.RIGHT,
+              isRead: false,
+            }),
+          );
+          return setText('');
+        }
+      }
+    },
+    [text, targetUser],
+  );
 
   return (
     <div>
@@ -77,6 +151,7 @@ const Chat: React.FunctionComponent<IChatProps> = ({ computedMatch, dispatch, ch
       </NavBar>
       <List className={`chat-input`}>
         <InputItem
+          onKeyDown={handleEnterKeyDown}
           value={text}
           onChange={handleTextChange}
           placeholder={`Type here ...`}

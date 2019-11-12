@@ -2,6 +2,7 @@ import { Dispatch } from 'redux';
 import { RouterTypes } from 'umi';
 import { CodeNumber } from '@/enum';
 import { Kind } from '../enum/index';
+import { ChatDto } from '../dto/chat.dto';
 
 export interface IUmiComponent extends RouterTypes<{}, { id: string }> {
   dispatch: Dispatch;
@@ -46,9 +47,12 @@ export interface IGeniusModel {
   isUpdatingGeniusInfo?: boolean;
 }
 export interface IChatModel {
+  currentChat?: ChatDto;
   chatList?: [];
+  combinedIdChatList?: [];
   targetUser?: IBoss | IGenius;
   isGettingTargetUser?: boolean;
+  isGettingCombinedIdChatList?: boolean;
 }
 
 export interface IResult<T> {
