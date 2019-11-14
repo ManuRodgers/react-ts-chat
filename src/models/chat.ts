@@ -9,9 +9,13 @@ import {
   sendMsgAsync,
   sendMsgSync,
   receiveMsgAsync,
+  receiveMsgSync,
   getCombinedIdChatListSync,
   getCombinedIdChatListAsync,
   setIsGettingCombinedIdChatList,
+  getToIdChatListSync,
+  getToIdChatListAsync,
+  setIsGettingToIdChatList,
 } from '@/actions/chatActions';
 
 import { IGlobalState, IGenius } from '@/interfaces';
@@ -34,20 +38,48 @@ const initState: IGlobalState['chat'] = {
   },
   chatList: [],
   combinedIdChatList: [],
+  toIdChatList: [],
   targetUser: undefined,
   isGettingTargetUser: false,
   isGettingCombinedIdChatList: false,
+  isGettingToIdChatList: false,
+  unread: 0,
 };
 const chatBuilder = new DvaModelBuilder(initState, 'chat')
   .case(getTargetUserByIdSync, (state, { targetUser }) => ({ ...state, targetUser }))
   .case(getCombinedIdChatListSync, (state, { combinedIdChatList }) => ({
     ...state,
     combinedIdChatList,
+    unread: combinedIdChatList.filter(chat => !chat.isRead).length,
+  }))
+  .case(setIsGettingCombinedIdChatList, (state, { isGettingCombinedIdChatList }) => ({
+    ...state,
+    isGettingCombinedIdChatList,
+  }))
+  .case(getToIdChatListSync, (state, { toIdChatList }) => ({
+    ...state,
+    toIdChatList,
+    unread: toIdChatList.filter(chat => !chat.isRead).length,
+  }))
+  .case(setIsGettingToIdChatList, (state, { isGettingToIdChatList }) => ({
+    ...state,
+    isGettingToIdChatList,
   }))
   .case(sendMsgSync, (state, { combinedId, createdAt, from, position, text, to, isRead }) => ({
     ...state,
     currentChat: { combinedId, createdAt, from, position, text, to, isRead },
   }))
+  .case(receiveMsgSync, (state, { newChat }) => {
+    // return state;
+    if (state.combinedIdChatList.includes(newChat)) {
+      return state;
+    }
+    return {
+      ...state,
+      combinedIdChatList: [...state.combinedIdChatList, newChat],
+      unread: state.unread + 1,
+    };
+  })
   .takeEvery(getTargetUserByIdAsync, function*({ id }, { select, put }) {
     try {
       const accessToken = yield localStorage.getItem('access_token');
@@ -98,8 +130,8 @@ const chatBuilder = new DvaModelBuilder(initState, 'chat')
   })
   .takeEvery(getCombinedIdChatListAsync, function*({ combinedId }, { select, put }) {
     try {
-      console.log('TCL: .takeEvery -> combinedId', combinedId);
       const accessToken = yield localStorage.getItem('access_token');
+
       const isGettingCombinedIdChatList = yield select(
         (state: IGlobalState) => state.chat.isGettingCombinedIdChatList,
       );
@@ -114,11 +146,49 @@ const chatBuilder = new DvaModelBuilder(initState, 'chat')
           headers: { Authorization: `Bearer ${accessToken}` },
         },
       );
-      console.log('TCL: data', data);
-      console.log('TCL: status', status);
+      if (status === 201 && data.code === CodeNumber.SUCCESS) {
+        console.log('TCL: .takeEvery -> data.data', data.data);
+        yield put(setIsGettingCombinedIdChatList({ isGettingCombinedIdChatList: false }));
+        yield put(getCombinedIdChatListSync({ combinedIdChatList: data.data }));
+      } else {
+        console.log('TCL: .takeEvery -> status', status);
+        console.log('get chatListByCombinedId no ok', data);
+        yield put(setIsGettingCombinedIdChatList({ isGettingCombinedIdChatList: false }));
+      }
     } catch (error) {
       console.error(error.response);
       yield put(setIsGettingCombinedIdChatList({ isGettingCombinedIdChatList: false }));
+    }
+  })
+  .takeEvery(getToIdChatListAsync, function*({ toId }, { select, put }) {
+    try {
+      const accessToken = yield localStorage.getItem('access_token');
+      const isGettingToIdChatList = yield select(
+        (state: IGlobalState) => state.chat.isGettingToIdChatList,
+      );
+      if (isGettingToIdChatList) {
+        return;
+      }
+      yield put(setIsGettingToIdChatList({ isGettingToIdChatList: true }));
+      const { data, status } = yield axios.post(
+        `/api/chat/chatListByToId`,
+        { toId },
+        {
+          headers: { Authorization: `Bearer ${accessToken}` },
+        },
+      );
+      if (status === 201 && data.code === CodeNumber.SUCCESS) {
+        console.log('TCL: .takeEvery -> data.data', data.data);
+        yield put(setIsGettingToIdChatList({ isGettingToIdChatList: false }));
+        yield put(getToIdChatListSync({ toIdChatList: data.data }));
+      } else {
+        console.log('TCL: .takeEvery -> status', status);
+        console.log('get chatListByCombinedId no ok', data);
+        yield put(setIsGettingToIdChatList({ isGettingToIdChatList: false }));
+      }
+    } catch (error) {
+      console.error(error.response);
+      yield put(setIsGettingToIdChatList({ isGettingToIdChatList: false }));
     }
   })
   .takeEvery(sendMsgAsync, function*(
@@ -127,10 +197,14 @@ const chatBuilder = new DvaModelBuilder(initState, 'chat')
   ) {
     yield socket.emit('sendMsgAsync', { from, to, text, combinedId, position, createdAt, isRead });
   })
-  .takeEvery(receiveMsgAsync, function*({}, { select, put }) {
-    yield socket.on('receiveMsgAsync', (data: ChatDto) => {
-      console.log('TCL: .takeEvery -> data', data);
-    });
+  .takeEvery(receiveMsgAsync, function*({ dispatch }, { select, put }) {
+    try {
+      yield socket.on('receiveMsgAsync', (data: ChatDto) => {
+        dispatch(receiveMsgSync({ newChat: data }));
+      });
+    } catch (error) {
+      console.error(error.response);
+    }
   });
 
 export default chatBuilder.build();

@@ -1,2 +1,2 @@
-import 'react-chat-elements/dist/main.css';
+import 'emoji-mart/css/emoji-mart.css';
 import './util/interceptor';

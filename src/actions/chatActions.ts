@@ -1,6 +1,7 @@
 import { actionCreatorFactory } from 'dva-model-creator';
 import { IGenius, IBoss } from '../interfaces/index';
 import { ChatDto } from '../dto/chat.dto';
+import { Dispatch } from 'redux';
 const chatActionCreator = actionCreatorFactory('chat');
 
 // chat info
@@ -14,15 +15,28 @@ export const getTargetUserByIdSync = chatActionCreator<{ targetUser: IGenius | I
 export const getTargetUserByIdAsync = chatActionCreator<{ id: string }>('getTargetUserByIdAsync');
 export const sendMsgAsync = chatActionCreator<ChatDto>('sendMsgAsync');
 export const sendMsgSync = chatActionCreator<ChatDto>('sendMsgSync');
-export const receiveMsgAsync = chatActionCreator<{}>('receiveMsgAsync');
+export const receiveMsgAsync = chatActionCreator<{ dispatch: Dispatch }>('receiveMsgAsync');
+export const receiveMsgSync = chatActionCreator<{ newChat: ChatDto }>('receiveMsgSync');
 
 // CombinedIdChatList
-export const getCombinedIdChatListSync = chatActionCreator<{ combinedIdChatList: [] }>(
+export const getCombinedIdChatListSync = chatActionCreator<{ combinedIdChatList: ChatDto[] }>(
   'getCombinedIdChatListSync',
 );
 export const getCombinedIdChatListAsync = chatActionCreator<{ combinedId: string }>(
   'getCombinedIdChatListAsync',
 );
+
 export const setIsGettingCombinedIdChatList = chatActionCreator<{
   isGettingCombinedIdChatList: boolean;
 }>('setIsGettingCombinedIdChatList');
+
+// ToIdChatList
+export const getToIdChatListSync = chatActionCreator<{ toIdChatList: ChatDto[] }>(
+  'getToIdChatListSync',
+);
+
+export const getToIdChatListAsync = chatActionCreator<{ toId: string }>('getToIdChatListAsync');
+
+export const setIsGettingToIdChatList = chatActionCreator<{
+  isGettingToIdChatList: boolean;
+}>('setIsGettingToIdChatList');

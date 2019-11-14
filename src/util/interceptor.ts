@@ -40,6 +40,11 @@ axios.interceptors.response.use(
       Toast.fail(`Internal server error`);
       router.push(`/auth/login`);
     }
+    if (error.response.status === 504) {
+      console.log('TCL: error', error.response);
+      Toast.fail(`gateway timeout`);
+      router.push(`/auth/login`);
+    }
     return Promise.reject(error);
   },
 );

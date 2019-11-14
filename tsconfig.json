@@ -8,11 +8,12 @@
     "esModuleInterop": true,
     "sourceMap": true,
     "baseUrl": ".",
-    "strict": true,
+    "strict": false,
     "paths": {
       "@/*": ["src/*"]
     },
     "allowSyntheticDefaultImports": true,
-    "experimentalDecorators": true
+    "experimentalDecorators": true,
+    "lib": ["es5", "es6", "dom", "dom.iterable"]
   }
 }

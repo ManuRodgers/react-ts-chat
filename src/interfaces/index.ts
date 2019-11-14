@@ -49,10 +49,13 @@ export interface IGeniusModel {
 export interface IChatModel {
   currentChat?: ChatDto;
   chatList?: [];
-  combinedIdChatList?: [];
+  combinedIdChatList: ChatDto[];
+  toIdChatList: ChatDto[];
   targetUser?: IBoss | IGenius;
   isGettingTargetUser?: boolean;
   isGettingCombinedIdChatList?: boolean;
+  isGettingToIdChatList?: boolean;
+  unread: number;
 }
 
 export interface IResult<T> {

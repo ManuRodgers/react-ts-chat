@@ -1,13 +1,15 @@
-import React, { memo, Fragment } from 'react';
+import React, { memo, Fragment, useEffect } from 'react';
 import Auth from '@/components/Auth';
 import { router } from 'umi';
 import { connect } from 'dva';
 import { IUmiComponent, IGlobalState } from '@/interfaces';
 import { NavBar, TabBar, WhiteSpace } from 'antd-mobile';
 import { Kind } from '@/enum';
+import { receiveMsgAsync, getToIdChatListAsync } from '@/actions/chatActions';
 import './dashboard.less';
-const mapStateToProps = ({ auth }: IGlobalState) => ({
+const mapStateToProps = ({ auth, chat }: IGlobalState) => ({
   auth,
+  chat,
 });
 type DashboardStateProps = ReturnType<typeof mapStateToProps>;
 interface IDashboardProps extends IUmiComponent, DashboardStateProps {}
@@ -17,9 +19,11 @@ const Dashboard: React.FunctionComponent<IDashboardProps> = ({
   dispatch,
   auth,
   location,
+  chat,
 }) => {
   const pathname = location.pathname;
-  const { kind } = auth;
+  const { kind, userId } = auth;
+  const { unread } = chat;
   const navList = [
     {
       path: '/dashboard/boss',
@@ -67,6 +71,7 @@ const Dashboard: React.FunctionComponent<IDashboardProps> = ({
     return filteredNavList.map(nav => {
       return (
         <TabBar.Item
+          badge={nav.path === `/dashboard/message` ? unread : 0}
           icon={{
             uri: require(`@/images/${nav.icon}.png`),
           }}
@@ -81,6 +86,20 @@ const Dashboard: React.FunctionComponent<IDashboardProps> = ({
       );
     });
   };
+
+  // getToIdChatListAsync
+  useEffect(() => {
+    if (userId) {
+      dispatch(getToIdChatListAsync({ toId: userId }));
+    }
+  }, [userId]);
+
+  // receiveMsgAsync
+  useEffect(() => {
+    console.log('TCL: receiveMsgAsync in boss');
+    dispatch(receiveMsgAsync({ dispatch }));
+  });
+
   return (
     <Fragment>
       <Auth dispatch={dispatch} />
