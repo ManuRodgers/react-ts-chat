@@ -16,6 +16,9 @@ import {
   getToIdChatListSync,
   getToIdChatListAsync,
   setIsGettingToIdChatList,
+  getChatListSync,
+  getChatListAsync,
+  setIsGettingChatList,
 } from '@/actions/chatActions';
 
 import { IGlobalState, IGenius } from '@/interfaces';
@@ -43,6 +46,7 @@ const initState: IGlobalState['chat'] = {
   isGettingTargetUser: false,
   isGettingCombinedIdChatList: false,
   isGettingToIdChatList: false,
+  isGettingChatList: false,
   unread: 0,
 };
 const chatBuilder = new DvaModelBuilder(initState, 'chat')
@@ -64,6 +68,15 @@ const chatBuilder = new DvaModelBuilder(initState, 'chat')
   .case(setIsGettingToIdChatList, (state, { isGettingToIdChatList }) => ({
     ...state,
     isGettingToIdChatList,
+  }))
+  .case(getChatListSync, (state, { chatList, userId }) => ({
+    ...state,
+    chatList,
+    unread: chatList.filter(chat => !chat.isRead && chat.to === userId).length,
+  }))
+  .case(setIsGettingChatList, (state, { isGettingChatList }) => ({
+    ...state,
+    isGettingChatList,
   }))
   .case(sendMsgSync, (state, { combinedId, createdAt, from, position, text, to, isRead }) => ({
     ...state,
@@ -189,6 +202,36 @@ const chatBuilder = new DvaModelBuilder(initState, 'chat')
     } catch (error) {
       console.error(error.response);
       yield put(setIsGettingToIdChatList({ isGettingToIdChatList: false }));
+    }
+  })
+  .takeEvery(getChatListAsync, function*({ userId }, { select, put }) {
+    console.log('TCL: .takeEvery -> userId', userId);
+    try {
+      const accessToken = yield localStorage.getItem('access_token');
+      const isGettingChatList = yield select((state: IGlobalState) => state.chat.isGettingChatList);
+      if (isGettingChatList) {
+        return;
+      }
+      yield put(setIsGettingChatList({ isGettingChatList: true }));
+      const { data, status } = yield axios.post(
+        `/api/chat/chatListByUserId`,
+        { userId },
+        {
+          headers: { Authorization: `Bearer ${accessToken}` },
+        },
+      );
+      if (status === 201 && data.code === CodeNumber.SUCCESS) {
+        console.log('TCL: .takeEvery -> data.data', data.data);
+        yield put(setIsGettingChatList({ isGettingChatList: false }));
+        yield put(getChatListSync({ chatList: data.data, userId }));
+      } else {
+        console.log('TCL: .takeEvery -> status', status);
+        console.log('get chatListByCombinedId no ok', data);
+        yield put(setIsGettingChatList({ isGettingChatList: false }));
+      }
+    } catch (error) {
+      console.error(error.response);
+      yield put(setIsGettingChatList({ isGettingChatList: false }));
     }
   })
   .takeEvery(sendMsgAsync, function*(

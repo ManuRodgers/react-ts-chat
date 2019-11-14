@@ -40,3 +40,14 @@ export const getToIdChatListAsync = chatActionCreator<{ toId: string }>('getToId
 export const setIsGettingToIdChatList = chatActionCreator<{
   isGettingToIdChatList: boolean;
 }>('setIsGettingToIdChatList');
+
+// ChatList
+export const getChatListSync = chatActionCreator<{ chatList: ChatDto[]; userId: string }>(
+  'getChatListSync',
+);
+
+export const getChatListAsync = chatActionCreator<{ userId: string }>('getChatListAsync');
+
+export const setIsGettingChatList = chatActionCreator<{
+  isGettingChatList: boolean;
+}>('setIsGettingChatList');

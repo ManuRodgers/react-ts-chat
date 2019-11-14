@@ -2,7 +2,7 @@ import { DvaModelBuilder } from 'dva-model-creator';
 import axios, { AxiosResponse } from 'axios';
 import { router } from 'umi';
 
-import { IGlobalState } from '@/interfaces';
+import { IGlobalState, IGenius } from '@/interfaces';
 import {
   setAvatar,
   setTitle,

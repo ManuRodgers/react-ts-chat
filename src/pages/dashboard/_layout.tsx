@@ -96,7 +96,6 @@ const Dashboard: React.FunctionComponent<IDashboardProps> = ({
 
   // receiveMsgAsync
   useEffect(() => {
-    console.log('TCL: receiveMsgAsync in boss');
     dispatch(receiveMsgAsync({ dispatch }));
   });
 

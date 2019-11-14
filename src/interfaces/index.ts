@@ -28,7 +28,7 @@ export interface IAuthModel {
 }
 
 export interface IBossModel {
-  geniusList?: [];
+  geniusList?: IGenius[];
   isGettingGeniusList: boolean;
   avatar?: string;
   title?: string;
@@ -38,7 +38,7 @@ export interface IBossModel {
   isUpdatingBossInfo?: boolean;
 }
 export interface IGeniusModel {
-  bossList?: [];
+  bossList?: IBoss[];
   isGettingBossList?: boolean;
   avatar?: string;
   job?: string;
@@ -48,13 +48,14 @@ export interface IGeniusModel {
 }
 export interface IChatModel {
   currentChat?: ChatDto;
-  chatList?: [];
+  chatList?: ChatDto[];
   combinedIdChatList: ChatDto[];
   toIdChatList: ChatDto[];
   targetUser?: IBoss | IGenius;
   isGettingTargetUser?: boolean;
   isGettingCombinedIdChatList?: boolean;
   isGettingToIdChatList?: boolean;
+  isGettingChatList?: boolean;
   unread: number;
 }
 
