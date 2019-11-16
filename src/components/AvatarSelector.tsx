@@ -29,7 +29,7 @@ const AvatarSelector: React.FunctionComponent<IAvatarSelectorProps> = ({
         <span>selected avatar: </span> <img width={20} src={selectedAvatar} />
       </Fragment>
     ) : (
-      <span>Please select your avatar </span>
+      <div>Please select your avatar </div>
     );
   }, [selectedAvatar]);
   return (

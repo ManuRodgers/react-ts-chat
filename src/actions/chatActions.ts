@@ -17,6 +17,10 @@ export const sendMsgAsync = chatActionCreator<ChatDto>('sendMsgAsync');
 export const sendMsgSync = chatActionCreator<ChatDto>('sendMsgSync');
 export const receiveMsgAsync = chatActionCreator<{ dispatch: Dispatch }>('receiveMsgAsync');
 export const receiveMsgSync = chatActionCreator<{ newChat: ChatDto }>('receiveMsgSync');
+export const readMsgAsync = chatActionCreator<{ to: string; from: string; dispatch: Dispatch }>(
+  'readMsgAsync',
+);
+export const readMsgSync = chatActionCreator<{}>('readMsgSync');
 
 // CombinedIdChatList
 export const getCombinedIdChatListSync = chatActionCreator<{ combinedIdChatList: ChatDto[] }>(

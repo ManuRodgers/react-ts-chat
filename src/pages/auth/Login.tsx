@@ -40,7 +40,6 @@ const Login: React.FunctionComponent<ILoginProps> = ({ auth, dispatch }) => {
   const forLogin: React.MouseEventHandler<HTMLAnchorElement> = useCallback(() => {
     dispatch(loginAsync({ email, password }));
   }, [email, password]);
-  // TODO:
   const generateErrorMsg = (errorMsg: string = ''): ReactNode | null => {
     return errorMsg === '' ? null : (
       <NoticeBar icon={null} mode="closable">

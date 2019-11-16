@@ -19,6 +19,8 @@ import {
   getChatListSync,
   getChatListAsync,
   setIsGettingChatList,
+  readMsgAsync,
+  readMsgSync,
 } from '@/actions/chatActions';
 
 import { IGlobalState, IGenius } from '@/interfaces';
@@ -84,12 +86,18 @@ const chatBuilder = new DvaModelBuilder(initState, 'chat')
   }))
   .case(receiveMsgSync, (state, { newChat }) => {
     // return state;
-    if (state.combinedIdChatList.includes(newChat)) {
+    if (
+      state.combinedIdChatList.includes(newChat) ||
+      state.chatList.includes(newChat) ||
+      state.toIdChatList.includes(newChat)
+    ) {
       return state;
     }
     return {
       ...state,
       combinedIdChatList: [...state.combinedIdChatList, newChat],
+      chatList: [...state.chatList, newChat],
+      toIdChatList: [...state.toIdChatList, newChat],
       unread: state.unread + 1,
     };
   })
@@ -245,6 +253,22 @@ const chatBuilder = new DvaModelBuilder(initState, 'chat')
       yield socket.on('receiveMsgAsync', (data: ChatDto) => {
         dispatch(receiveMsgSync({ newChat: data }));
       });
+    } catch (error) {
+      console.error(error.response);
+    }
+  })
+  .takeEvery(readMsgAsync, function*({ from, to, dispatch }, { select, put }) {
+    try {
+      const accessToken = yield localStorage.getItem('access_token');
+      const { data, status } = yield axios.put(
+        `/api/chat/readMsgAsync`,
+        { from, to },
+        {
+          headers: { Authorization: `Bearer ${accessToken}` },
+        },
+      );
+      console.log('TCL: .takeEvery -> status', status);
+      console.log('TCL: .takeEvery -> data', data);
     } catch (error) {
       console.error(error.response);
     }

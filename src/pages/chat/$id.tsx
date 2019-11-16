@@ -9,6 +9,8 @@ import {
   sendMsgAsync,
   receiveMsgAsync,
   getCombinedIdChatListAsync,
+  getTargetUserByIdSync,
+  readMsgAsync,
 } from '@/actions/chatActions';
 import { IUmiComponent, IGlobalState } from '@/interfaces';
 import './chat.less';
@@ -63,8 +65,12 @@ const Chat: React.FunctionComponent<IChatProps> = ({
 
   // navbar left
   const handleLeftClicked: React.MouseEventHandler<SVGSVGElement> = useCallback(() => {
+    if (to) {
+      dispatch(readMsgAsync({ dispatch, from: to, to: userId }));
+    }
+    dispatch(getTargetUserByIdSync({ targetUser: undefined }));
     router.goBack();
-  }, []);
+  }, [to]);
   const renderLeftIcon = () => {
     return <Icon onClick={handleLeftClicked} key="0" type="left" style={{ marginRight: '16px' }} />;
   };
