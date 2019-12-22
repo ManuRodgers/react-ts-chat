@@ -178,15 +178,19 @@ const Chat: React.FunctionComponent<IChatProps> = ({
   const renderExtra = useCallback(() => {
     return (
       <div>
-        <span style={{ fontSize: 18, marginRight: 4 }}>Send</span>
+        <span onClick={handleSendClicked} style={{ fontSize: 18, marginRight: 12 }}>
+          Send
+        </span>
         <Emoji onClick={onEmojiClicked} emoji={`smiley`} size={20} tooltip={true} />
       </div>
     );
   }, []);
 
   const onEmojiSelected = useCallback((emoji: EmojiData) => {
+    // @ts-ignore
     console.log('TCL: onEmojiSelected -> emoji', emoji.native);
     setText(text => {
+      // @ts-ignore
       return `${text}${emoji.native}`;
     });
   }, []);
@@ -217,7 +221,6 @@ const Chat: React.FunctionComponent<IChatProps> = ({
           onChange={handleTextChange}
           placeholder={`Type here ...`}
           extra={renderExtra()}
-          onExtraClick={handleSendClicked}
         />
         {renderEmoji()}
       </List>
