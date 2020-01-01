@@ -18,7 +18,7 @@ employee:
 4, email: rodgers@gmail.com;  password: 123123;
 
 
-this project is delopyed on AWS S3 service and the server side source code of this app is on 
+this project is delopyed on AWS S3 service http://react-ts-chat.s3-website-ap-southeast-2.amazonaws.com and the server side source code of this app is on 
 https://github.com/ManuRodgers/nestjs-ts-chat that is delopyed on AWS Elastic Beanstalk service.
 
 
