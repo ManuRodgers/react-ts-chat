@@ -6,6 +6,7 @@ both employee and employer can chat with each other and talk about the job oppor
 there are four existing users of this app (also feel free to create your own users for test)
 
 employers: 
+
 1, email: pop@gmail.com;  password: 123123;
 
 2, email: tim@gmail.com;  password: 123123;
