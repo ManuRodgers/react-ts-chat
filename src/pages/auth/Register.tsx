@@ -4,7 +4,7 @@ import { WhiteSpace, List, InputItem, Flex, Radio, Button, NoticeBar } from 'ant
 import { IUmiComponent, IGlobalState } from '@/interfaces';
 import Logo from './components/Logo';
 import { Kind } from '@/enum';
-import { registerAsync, setErrorMsg } from '../../actions/authActions';
+import { registerAsync, setErrorMsg } from '@/actions/authActions';
 import { router } from 'umi';
 const mapStateToProps = ({ auth }: IGlobalState) => ({
   auth,

@@ -28,6 +28,7 @@ import { BossInfoDto } from '@/dto/bossInfo.dto';
 import { bossInfoSync } from '@/actions/bossActions';
 import { GeniusInfoDto } from '@/dto/geniusInfo.dto';
 import { geniusInfoSync } from '@/actions/geniusActions';
+import { AWS_SERVER } from '@/util/const';
 
 const initState: IGlobalState['auth'] = {
   isAuth: false,
@@ -74,12 +75,16 @@ const authBuilder = new DvaModelBuilder(initState, 'auth')
         return;
       }
       yield put(setIsLogin({ isLogin: true }));
-      const { data, status } = yield axios.post('/api/auth/signin', {
-        email,
-        password,
-      } as LoginDto);
+      const { data, status } = yield axios.post(
+        `${AWS_SERVER}/auth/signin`,
+        // '/api/auth/signin',
+        {
+          email,
+          password,
+        } as LoginDto,
+      );
 
-      if (status === 201) {
+      if (status === 200) {
         console.log(`login ok`);
         yield localStorage.setItem('access_token', data.accessToken);
         yield put(setIsLogin({ isLogin: false }));
@@ -114,14 +119,18 @@ const authBuilder = new DvaModelBuilder(initState, 'auth')
         return;
       }
       yield put(setIsRegistering({ isRegistering: true }));
-      const { data, status } = yield axios.post('/api/auth/signup', {
-        email,
-        password,
-        kind,
-      } as RegisterDto);
+      const { data, status } = yield axios.post(
+        `${AWS_SERVER}/auth/signup`,
+        // '/api/auth/signup',
+        {
+          email,
+          password,
+          kind,
+        } as RegisterDto,
+      );
       console.log('TCL: .takeEvery -> status', status);
       console.log('TCL: .takeEvery -> data', data);
-      if (status === 201 && data.code === 0) {
+      if (status === 200 && data.code === 0) {
         // register ok
         console.log(`register ok`);
         yield put(setIsRegistering({ isRegistering: false }));
@@ -170,7 +179,7 @@ const authBuilder = new DvaModelBuilder(initState, 'auth')
         return;
       }
       yield put(setIsGettingCurrentUser({ isGettingCurrentUser: true }));
-      const { data, status } = yield axios.get('/api/user/info', {
+      const { data, status } = yield axios.get(`${AWS_SERVER}/user/info`, {
         headers: { Authorization: `Bearer ${accessToken}` },
       });
       console.log('TCL: .takeEvery -> data', data);

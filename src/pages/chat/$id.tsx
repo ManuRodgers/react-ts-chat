@@ -41,6 +41,7 @@ const Chat: React.FunctionComponent<IChatProps> = ({
   const { userId, kind } = auth;
   const to = targetUser && targetUser.id;
   const from = userId;
+
   const avatar = targetUser && targetUser.avatar;
   let currentAvatar = '';
   if (kind === Kind.BOSS) {
@@ -50,12 +51,10 @@ const Chat: React.FunctionComponent<IChatProps> = ({
   }
   // text
   const [text, setText] = useState<string>('');
-  const handleTextChange = useCallback(
-    (value: string) => {
-      setText(value);
-    },
-    [text],
-  );
+
+  const handleTextChange = useCallback((value: string) => {
+    setText(value);
+  }, []);
   // getTargetUserByIdAsync
   useEffect(() => {
     if (computedMatch) {
@@ -75,28 +74,6 @@ const Chat: React.FunctionComponent<IChatProps> = ({
     return <Icon onClick={handleLeftClicked} key="0" type="left" style={{ marginRight: '16px' }} />;
   };
 
-  // handleSendClicked
-  const handleSendClicked: React.MouseEventHandler<HTMLDivElement> = useCallback(() => {
-    if (from && to && text) {
-      const combinedId = [from, to].sort().join('_');
-      // timestamp in seconds
-      const createdAt = Math.floor(Date.now() / 1000);
-      dispatch(
-        sendMsgAsync({
-          from,
-          to,
-          text,
-          combinedId,
-          createdAt,
-          position: Position.RIGHT,
-          isRead: false,
-        }),
-      );
-      setShowEmoji(false);
-      setText('');
-    }
-  }, [text, to]);
-
   // getCombinedIdChatListAsync
   useEffect(() => {
     console.log(`chatListByCombinedId`);
@@ -113,11 +90,40 @@ const Chat: React.FunctionComponent<IChatProps> = ({
     dispatch(receiveMsgAsync({ dispatch }));
   }, [combinedIdChatList]);
 
+  // handleSendClicked
+  const handleSendClicked = useCallback(
+    (value: string, to: string, from: string) => {
+      console.log(`text`, value);
+      console.log(`from`, from);
+      console.log(`to`, to);
+      if (from && to && value) {
+        const combinedId = [from, to].sort().join('_');
+        // timestamp in seconds
+        const createdAt = Math.floor(Date.now() / 1000);
+        dispatch(
+          sendMsgAsync({
+            from,
+            to,
+            text: value,
+            combinedId,
+            createdAt,
+            position: Position.RIGHT,
+            isRead: false,
+          }),
+        );
+        setShowEmoji(false);
+        return setText('');
+      }
+    },
+    [targetUser],
+  );
+
   const handleEnterKeyDown: React.KeyboardEventHandler = useCallback(
     e => {
       if (e.keyCode === 13) {
         const to = targetUser && targetUser.id;
         const from = userId;
+        console.log(`text`, text);
         if (from && to && text) {
           const combinedId = [from, to].sort().join('_');
           // timestamp in seconds
@@ -140,6 +146,7 @@ const Chat: React.FunctionComponent<IChatProps> = ({
     },
     [text, targetUser],
   );
+
   //  renderChatList
   const renderChatList = useCallback(
     (combinedIdChatList: ChatDto[]) => {
@@ -175,10 +182,15 @@ const Chat: React.FunctionComponent<IChatProps> = ({
   const onEmojiClicked = useCallback(() => {
     setShowEmoji(showEmoji => !showEmoji);
   }, []);
-  const renderExtra = useCallback(() => {
+  const renderExtra = useCallback((text: string, to: string, from: string) => {
     return (
       <div>
-        <span onClick={handleSendClicked} style={{ fontSize: 18, marginRight: 12 }}>
+        <span
+          onClick={() => {
+            handleSendClicked(text, to, from);
+          }}
+          style={{ fontSize: 18, marginRight: 12 }}
+        >
           Send
         </span>
         <Emoji onClick={onEmojiClicked} emoji={`smiley`} size={20} tooltip={true} />
@@ -218,9 +230,11 @@ const Chat: React.FunctionComponent<IChatProps> = ({
         <InputItem
           onKeyDown={handleEnterKeyDown}
           value={text}
-          onChange={handleTextChange}
+          onChange={value => {
+            handleTextChange(value);
+          }}
           placeholder={`Type here ...`}
-          extra={renderExtra()}
+          extra={renderExtra(text, to, from)}
         />
         {renderEmoji()}
       </List>

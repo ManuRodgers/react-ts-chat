@@ -20,6 +20,7 @@ import { setErrorMsg } from '@/actions/authActions';
 import { getRedirectPath } from '@/util/redirectTo';
 import { GeniusInfoDto } from '@/dto/geniusInfo.dto';
 import { CodeNumber } from '@/enum';
+import { AWS_SERVER } from '@/util/const';
 
 const initState: IGlobalState['genius'] = {
   bossList: [],
@@ -70,7 +71,7 @@ const geniusBuilder = new DvaModelBuilder(initState, 'genius')
       }
       yield put(setIsUpdatingGeniusInfo({ isUpdatingGeniusInfo: true }));
       const { data, status } = yield axios.put(
-        '/api/user/updateGeniusInfo',
+        `${AWS_SERVER}/user/updateGeniusInfo`,
         { avatar, job, salary, profile } as GeniusInfoDto,
         {
           headers: { Authorization: `Bearer ${accessToken}` },
@@ -103,7 +104,7 @@ const geniusBuilder = new DvaModelBuilder(initState, 'genius')
         return;
       }
       yield put(setIsGettingBossList({ isGettingBossList: true }));
-      const { data, status } = yield axios.get('/api/user/bossList', {
+      const { data, status } = yield axios.get(`${AWS_SERVER}/user/bossList`, {
         headers: { Authorization: `Bearer ${accessToken}` },
       });
       if (status === 200 && data.code === CodeNumber.SUCCESS) {

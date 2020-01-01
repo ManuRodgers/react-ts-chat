@@ -41,6 +41,7 @@ const config: IConfig = {
   proxy: {
     '/api': {
       target: 'http://localhost:9093/',
+      // target: 'http://nestjs-ts-chat.ap-southeast-2.elasticbeanstalk.com/',
       changeOrigin: true,
       pathRewrite: { '^/api': '' },
     },

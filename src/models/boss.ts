@@ -21,6 +21,7 @@ import { setErrorMsg } from '@/actions/authActions';
 import { getRedirectPath } from '@/util/redirectTo';
 import { BossInfoDto } from '@/dto/bossInfo.dto';
 import { CodeNumber } from '@/enum';
+import { AWS_SERVER } from '@/util/const';
 
 const initState: IGlobalState['boss'] = {
   geniusList: [],
@@ -82,7 +83,7 @@ const bossBuilder = new DvaModelBuilder(initState, 'boss')
       }
       yield put(setIsUpdatingBossInfo({ isUpdatingBossInfo: true }));
       const { data, status } = yield axios.put(
-        '/api/user/updateBossInfo',
+        `${AWS_SERVER}/user/updateBossInfo`,
         { avatar, title, company, money, description } as BossInfoDto,
         {
           headers: { Authorization: `Bearer ${accessToken}` },
@@ -115,7 +116,7 @@ const bossBuilder = new DvaModelBuilder(initState, 'boss')
         return;
       }
       yield put(setIsGettingGeniusList({ isGettingGeniusList: true }));
-      const { data, status } = yield axios.get('/api/user/geniusList', {
+      const { data, status } = yield axios.get(`${AWS_SERVER}/user/geniusList`, {
         headers: { Authorization: `Bearer ${accessToken}` },
       });
       console.log('TCL: .takeEvery -> data', data);

@@ -27,9 +27,11 @@ import { IGlobalState, IGenius } from '@/interfaces';
 import { CodeNumber, Kind, Position } from '@/enum';
 import { IBoss } from '../interfaces/index';
 import { ChatDto } from '@/dto/chat.dto';
+import { AWS_SERVER } from '@/util/const';
 
-const socketURL = process.env.SOCKETIO_URL || `ws://localhost:9093`;
-const socket = io(socketURL);
+const socketURL = process.env.SOCKETIO_URL;
+// const socketURL = process.env.SOCKETIO_URL || `ws://localhost:9093`;
+const socket = io(AWS_SERVER);
 
 const initState: IGlobalState['chat'] = {
   currentChat: {
@@ -112,7 +114,7 @@ const chatBuilder = new DvaModelBuilder(initState, 'chat')
       }
       yield put(setIsGettingTargetUser({ isGettingTargetUser: true }));
       const { data, status } = yield axios.get(
-        `/api/user/targetUser/${id}`,
+        `${AWS_SERVER}/user/targetUser/${id}`,
 
         {
           headers: { Authorization: `Bearer ${accessToken}` },
@@ -161,7 +163,7 @@ const chatBuilder = new DvaModelBuilder(initState, 'chat')
       }
       yield put(setIsGettingCombinedIdChatList({ isGettingCombinedIdChatList: true }));
       const { data, status } = yield axios.post(
-        `/api/chat/chatListByCombinedId`,
+        `${AWS_SERVER}/chat/chatListByCombinedId`,
         { combinedId },
         {
           headers: { Authorization: `Bearer ${accessToken}` },
@@ -192,7 +194,7 @@ const chatBuilder = new DvaModelBuilder(initState, 'chat')
       }
       yield put(setIsGettingToIdChatList({ isGettingToIdChatList: true }));
       const { data, status } = yield axios.post(
-        `/api/chat/chatListByToId`,
+        `${AWS_SERVER}/chat/chatListByToId`,
         { toId },
         {
           headers: { Authorization: `Bearer ${accessToken}` },
@@ -222,7 +224,7 @@ const chatBuilder = new DvaModelBuilder(initState, 'chat')
       }
       yield put(setIsGettingChatList({ isGettingChatList: true }));
       const { data, status } = yield axios.post(
-        `/api/chat/chatListByUserId`,
+        `${AWS_SERVER}/chat/chatListByUserId`,
         { userId },
         {
           headers: { Authorization: `Bearer ${accessToken}` },
@@ -246,6 +248,8 @@ const chatBuilder = new DvaModelBuilder(initState, 'chat')
     { from, to, text, combinedId, position, createdAt, isRead },
     { select, put },
   ) {
+    console.log(`sendMsgAsync`);
+    console.log(AWS_SERVER);
     yield socket.emit('sendMsgAsync', { from, to, text, combinedId, position, createdAt, isRead });
   })
   .takeEvery(receiveMsgAsync, function*({ dispatch }, { select, put }) {
@@ -261,7 +265,7 @@ const chatBuilder = new DvaModelBuilder(initState, 'chat')
     try {
       const accessToken = yield localStorage.getItem('access_token');
       const { data, status } = yield axios.put(
-        `/api/chat/readMsgAsync`,
+        `${AWS_SERVER}/chat/readMsgAsync`,
         { from, to },
         {
           headers: { Authorization: `Bearer ${accessToken}` },
