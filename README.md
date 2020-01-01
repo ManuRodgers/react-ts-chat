@@ -5,6 +5,8 @@ both employee and employer can chat with each other and talk about the job oppor
 
 there are four existing users of this app (also feel free to create your own users for test)
 
+
+
 employers: 
 
 1, email: pop@gmail.com;  password: 123123;
@@ -20,5 +22,7 @@ employee:
 
 this project is delopyed on AWS S3 service http://react-ts-chat.s3-website-ap-southeast-2.amazonaws.com and the server side source code of this app is on 
 https://github.com/ManuRodgers/nestjs-ts-chat that is delopyed on AWS Elastic Beanstalk service.
+
+note: please use advanced browser like Chrome under mobile mode to test this app
 
 
