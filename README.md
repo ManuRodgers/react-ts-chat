@@ -23,6 +23,7 @@ employee:
 this project is delopyed on AWS S3 service http://react-ts-chat.s3-website-ap-southeast-2.amazonaws.com and the server side source code of this app is on 
 https://github.com/ManuRodgers/nestjs-ts-chat that is delopyed on AWS Elastic Beanstalk service.
 
-note: please use advanced browser like Chrome under mobile mode to test this app
+# note: 
+please use advanced browser like Chrome or safari under mobile mode to test this app. you can use Chrome to login as boss and use Safari to login as employee and both can chat with one another.
 
 
